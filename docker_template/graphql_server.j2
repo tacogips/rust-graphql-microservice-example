@@ -1,0 +1,13 @@
+{% extends "rust_base.j2" %}
+{% block build %}
+WORKDIR /app/graphql
+RUN cargo build --bin graphql-server ${BUILD_FLAG}
+{% endblock %}
+
+
+{% block bin %}
+COPY --from=builder /app/target/${BUILD_TARGET}/graphql-server graphql-server
+
+EXPOSE 5000
+CMD ./graphql-server -e .env
+{% endblock %}
