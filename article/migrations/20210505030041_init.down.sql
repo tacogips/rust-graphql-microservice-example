@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS article;
+DROP TYPE IF EXISTS article_status ;
+DROP EXTENSION IF EXISTS "uuid-ossp";

@@ -30,8 +30,12 @@ COPY . .
 COPY --from=cacher /app/target target
 COPY --from=cacher $CARGO_HOME $CARGO_HOME
 
-WORKDIR /app/graphql
-RUN cargo build --bin graphql-server ${BUILD_FLAG}
+ARG DATABASE_URL
+
+ENV SQLX_OFFLINE=true
+WORKDIR /app/article
+RUN cargo build --bin article-server ${BUILD_FLAG}
+
 
 
 # --- bin -----------------------------------------------
@@ -40,7 +44,10 @@ ARG BUILD_TARGET=release
 ARG ENV=dev
 
 WORKDIR app
-COPY --from=builder /app/target/${BUILD_TARGET}/graphql-server graphql-server
+ARG DATABASE_URL
+COPY --from=builder /app/target/${BUILD_TARGET}/article-server article-server
+
+ENV DATABASE_URL=${DATABASE_URL}
 
 EXPOSE 5000
-CMD ./graphql-server -e .env
+CMD ./article-server
