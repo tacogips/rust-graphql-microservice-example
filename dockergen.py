@@ -1,9 +1,9 @@
 from jinja2 import Environment, FileSystemLoader
 import os
 
-
 dockers = [
     ("graphql_server.j2", "graphql/Dockerfile"),
+    ("article_server.j2", "article/Dockerfile"),
 ]
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
