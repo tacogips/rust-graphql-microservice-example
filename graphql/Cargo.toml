@@ -13,6 +13,15 @@ actix-web = "3.3"
 async-graphql = "2.8"
 async-graphql-actix-web = "2.8.4"
 
+user = {path ="../user"}
+article = {path ="../article"}
+comment = {path ="../comment"}
+chrono = "0.4"
+reqwest = {version="0.11", features=["json"]}
+lazy_static = "1.4.0"
+anyhow = "1.0"
+serde = "1.0"
+
 [lib]
 name = "graphql"
 path = "src/lib.rs"

@@ -1,4 +1,6 @@
+use super::client;
 use async_graphql::*;
+use chrono::NaiveDateTime;
 
 #[derive(Enum, Copy, Clone, Eq, PartialEq)]
 pub enum ArticleStatus {
@@ -7,10 +9,12 @@ pub enum ArticleStatus {
 }
 
 pub struct Article {
-    id: String,
-    status: ArticleStatus,
-    overview: String,
-    author_id: String,
+    pub id: String,
+    pub status: ArticleStatus,
+    pub text: String,
+    pub author_id: String,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 #[Object]
@@ -19,12 +23,8 @@ impl Article {
         self.id.clone()
     }
 
-    async fn author(&self) -> User {
-        //TODO(tacogips) this is the mock
-        User {
-            id: self.author_id.to_string(),
-            name: format!("dummy_user_{}", self.author_id),
-        }
+    async fn author(&self) -> Option<User> {
+        client::get_user(&self.author_id).await.ok()
     }
 
     async fn status(&self) -> ArticleStatus {
@@ -32,23 +32,28 @@ impl Article {
     }
 
     async fn overview(&self) -> String {
-        self.overview.clone()
+        self.text.clone()
     }
 
-    async fn text(&self) -> String {
-        //TODO(tacogips) this is the mock
-        "dummy text ".to_string()
+    async fn text(&self) -> Option<String> {
+        client::get_article(&self.id).await.map(|a| a.text).ok()
     }
 
-    async fn first_comment(&self, limit: usize) -> String {
-        //TODO(tacogips) this is the mock
-        "dummy text ".to_string()
+    async fn comments(&self) -> Vec<Comment> {
+        client::find_comments(&self.id).await.unwrap()
     }
 }
 
 pub struct User {
-    id: String,
-    name: String,
+    pub id: String,
+    pub name: String,
+    pub email: String,
+}
+
+impl User {
+    pub fn new(id: String, name: String, email: String) -> Self {
+        Self { id, name, email }
+    }
 }
 
 #[Object]
@@ -60,12 +65,17 @@ impl User {
     async fn name(&self) -> String {
         self.name.clone()
     }
+
+    async fn email(&self) -> String {
+        self.email.clone()
+    }
 }
 
 pub struct Comment {
-    id: String,
-    text: String,
-    author_id: String,
+    pub id: String,
+    pub text: String,
+    pub author_id: String,
+    pub created_at: NaiveDateTime,
 }
 
 #[Object]
@@ -78,14 +88,7 @@ impl Comment {
         self.text.clone()
     }
 
-    async fn author(&self) -> User {
-        //TODO(tacogips) use Dataloder here
-        // https://async-graphql.github.io/async-graphql/en/dataloader.html
-
-        //TODO(tacogips) this is the mock
-        User {
-            id: self.author_id.to_string(),
-            name: format!("dummy_user_{}", self.author_id),
-        }
+    async fn author(&self) -> Option<User> {
+        client::get_user(&self.author_id).await.ok()
     }
 }

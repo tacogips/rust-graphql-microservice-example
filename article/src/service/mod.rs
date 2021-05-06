@@ -35,24 +35,24 @@ pub struct ArticleRow {
 }
 
 #[async_trait]
-pub trait ArtilceService {
+pub trait ArticleService {
     async fn find_articles(&self, overview_text: bool) -> Result<Vec<ArticleRow>>;
     async fn get_article(&self, article_id: Uuid) -> Result<Option<ArticleRow>>;
 }
 
 #[derive(Debug)]
-pub struct ArtilceServicePg {
+pub struct ArticleServicePg {
     db_pool: PgPool,
 }
 
-impl ArtilceServicePg {
-    pub fn new(db_pool: PgPool) -> ArtilceServicePg {
-        ArtilceServicePg { db_pool }
+impl ArticleServicePg {
+    pub fn new(db_pool: PgPool) -> ArticleServicePg {
+        ArticleServicePg { db_pool }
     }
 }
 
 #[async_trait]
-impl ArtilceService for ArtilceServicePg {
+impl ArticleService for ArticleServicePg {
     async fn find_articles(&self, overview_text: bool) -> Result<Vec<ArticleRow>> {
         //TODO(tacogips) findout more concise way to branch query generation
         let query_result = if overview_text {

@@ -4,6 +4,8 @@ import os
 dockers = [
     ("graphql_server.j2", "graphql/Dockerfile"),
     ("article_server.j2", "article/Dockerfile"),
+    ("user_server.j2", "user/Dockerfile"),
+    ("comment_server.j2", "comment/Dockerfile"),
 ]
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))

@@ -1,0 +1,20 @@
+{% extends "rust_base.j2" %}
+{% block build %}
+ARG DATABASE_URL
+
+ENV SQLX_OFFLINE=true
+WORKDIR /app/comment
+RUN cargo build --bin comment-server ${BUILD_FLAG}
+
+{% endblock %}
+
+
+{% block bin %}
+ARG DATABASE_URL
+COPY --from=builder /app/target/${BUILD_TARGET}/comment-server comment-server
+
+ENV DATABASE_URL=${DATABASE_URL}
+
+EXPOSE 5000
+CMD ./comment-server
+{% endblock %}
