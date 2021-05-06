@@ -1,5 +1,7 @@
 use async_graphql::*;
 
+mod client;
+mod converter;
 mod mutation;
 mod object;
 mod query;

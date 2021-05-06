@@ -6,7 +6,16 @@ RUN cargo build --bin graphql-server ${BUILD_FLAG}
 
 
 {% block bin %}
+ARG ARTICLE_ENDPOINT
+ARG USER_ENDPOINT
+ARG COMMENT_ENDPOINT
+
 COPY --from=builder /app/target/${BUILD_TARGET}/graphql-server graphql-server
+
+
+ENV ARTICLE_ENDPOINT = ${ARTICLE_ENDPOINT}
+ENV USER_ENDPOINT    = ${USER_ENDPOINT}
+ENV COMMENT_ENDPOINT = ${COMMENT_ENDPOINT}
 
 EXPOSE 5000
 CMD ./graphql-server -e .env

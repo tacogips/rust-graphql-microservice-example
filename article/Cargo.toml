@@ -19,7 +19,7 @@ tokio = {version = "1.3" , features = ["full"]}
 
 
 #
-# varion of actix-web should be 4.beta or you'll get error below from sqlx.
+# version of actix-web should be 4.beta or you'll get error below from sqlx.
 # accoding to
 # https://www.reddit.com/r/rust/comments/mqts17/issue_migrating_from_sqlx_035_to_051/
 #

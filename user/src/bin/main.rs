@@ -1,8 +1,9 @@
-use ::article::service::*;
+use ::user::service::*;
 
 use anyhow::{anyhow, Error as AnyError};
 use env_logger;
 use log;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::{
     postgres::{PgPool, PgPoolOptions},
@@ -29,28 +30,37 @@ macro_rules! env_value {
         env::var($env_key).map_err(|e| anyhow!("env {} not found. Err:{:?}", $env_key, e))
     };
 }
-#[get("/articles")]
-async fn find_articles(data: web::Data<SharedData>) -> Result<HttpResponse, Error> {
-    let service = ArticleServicePg::new(data.db_pool.clone());
-    match service.find_articles(true).await {
-        Ok(articles) => Ok(HttpResponse::Ok().json(articles)),
+
+#[derive(Deserialize, Serialize)]
+pub struct FindUserQuery {
+    ids: Option<Vec<String>>,
+}
+
+#[get("/users")]
+async fn find_users(
+    data: web::Data<SharedData>,
+    query: web::Query<FindUserQuery>,
+) -> Result<HttpResponse, Error> {
+    let service = UserServicePg::new(data.db_pool.clone());
+    match service.find_users(query.ids.clone()).await {
+        Ok(users) => Ok(HttpResponse::Ok().json(users)),
         Err(e) => {
-            log::error!("find article {:?}", e);
+            log::error!("find user {:?}", e);
             Err(Error::from(()))
         }
     }
 }
 
-#[get("/article/{id}")]
-async fn get_article(
+#[get("/user/{id}")]
+async fn get_user(
     data: web::Data<SharedData>,
     path: web::Path<String>,
 ) -> Result<HttpResponse, Error> {
-    let service = ArticleServicePg::new(data.db_pool.clone());
+    let service = UserServicePg::new(data.db_pool.clone());
 
-    let article_id = path.into_inner();
+    let user_id = path.into_inner();
     //Uuid
-    let article_id = match Uuid::from_str(&article_id) {
+    let user_id = match Uuid::from_str(&user_id) {
         Ok(id) => id,
         Err(e) => {
             log::error!("{}", e);
@@ -58,10 +68,10 @@ async fn get_article(
         }
     };
 
-    match service.get_article(article_id).await {
-        Ok(articles) => Ok(HttpResponse::Ok().json(articles)),
+    match service.get_user(user_id).await {
+        Ok(users) => Ok(HttpResponse::Ok().json(users)),
         Err(e) => {
-            log::error!("find article {:?}", e);
+            log::error!("find user {:?}", e);
             Err(Error::from(()))
         }
     }
@@ -83,7 +93,7 @@ async fn main() -> io::Result<()> {
     setup_logger();
 
     let db_conn_str = env_value!("DATABASE_URL")
-        .unwrap_or_else(|_| "postgres://db_user:pass@localhost:5432/article_db".to_string());
+        .unwrap_or_else(|_| "postgres://db_user:pass@localhost:5432/user_db".to_string());
 
     log::info!("db connection {}", db_conn_str);
 
@@ -95,14 +105,14 @@ async fn main() -> io::Result<()> {
         .expect(&format!("faield to connect db {}", db_conn_str));
 
     let data = SharedData { db_pool };
-    log::info!("article server is listening at 5000...");
+    log::info!("user server is listening at 5000...");
 
     HttpServer::new(move || {
         App::new()
             .data(data.clone())
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            .service(find_articles)
+            .service(find_users)
     })
     .bind(format!("0.0.0.0:5000"))?
     .run()
