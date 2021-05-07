@@ -42,10 +42,12 @@ services:
         BUILD_TARGET: debug
         ENV: dev
         DATABASE_URL: postgres://db_user:pass@db:5432/article_db
+
     depends_on:
       - "db"
     links:
       - "db:db"
+#      - "rabbitmq:rabbitmq"
     ports:
       - 5011:5000
 
@@ -65,7 +67,6 @@ services:
     ports:
       - 5012:5000
 
-
   comment:
     build:
       context: .
@@ -82,3 +83,13 @@ services:
     ports:
       - 5013:5000
 
+#  rabbitmq:
+#    image: rabbitmq:3-management
+#    hostname: my-rabbit
+#    volumes:
+#      - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+#      - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+#    ports:
+#      - 5672:5672
+#      - 15672:15672
+#

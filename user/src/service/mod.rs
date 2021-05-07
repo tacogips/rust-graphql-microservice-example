@@ -1,12 +1,11 @@
 use anyhow::{anyhow, Result};
 use log;
 use models::user::*;
-use serde::{Deserialize, Serialize};
 use sqlx::{
     self,
     postgres::PgPool,
     query_as,
-    types::{chrono::NaiveDateTime, uuid, Uuid},
+    types::{uuid, Uuid},
     Error as SqlError,
 };
 use std::result::Result as StdResult;

@@ -175,5 +175,17 @@
         false
       ]
     }
+  },
+  "f00cbd4f188edb1d818d57cd04a70566ea6d94f078772b246160b498946ad93e": {
+    "query": "delete from article where id = $1;",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      },
+      "nullable": []
+    }
   }
 }

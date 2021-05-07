@@ -1,5 +1,17 @@
 {
   "db": "PostgreSQL",
+  "8746ba4c2bb513c6cce714eae8269dce8eb9a4abce6e1308322a290c96891c38": {
+    "query": "delete  from comment_table where article_id = $1;",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      },
+      "nullable": []
+    }
+  },
   "89683ce319805fff0b950b353b4bf7bb107cffb14383bb95524772d8cadc34a2": {
     "query": "select * from comment_table where article_id = $1;",
     "describe": {
