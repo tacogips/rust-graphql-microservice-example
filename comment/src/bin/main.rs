@@ -8,7 +8,8 @@ use sqlx::postgres::{PgPool, PgPoolOptions};
 use std::env;
 use std::io;
 
-use actix_web::{get, middleware, web, App, Error, HttpResponse, HttpServer};
+use actix_web::{delete, get, middleware, web, App, Error, HttpResponse, HttpServer};
+use serde_json::json;
 
 use std::time::Duration;
 
@@ -33,6 +34,21 @@ async fn find_comments(
         Ok(comments) => Ok(HttpResponse::Ok().json(comments)),
         Err(e) => {
             log::error!("find comment {:?}", e);
+            Err(Error::from(()))
+        }
+    }
+}
+
+#[delete("/comments")]
+async fn delete_comments(
+    data: web::Data<SharedData>,
+    query: web::Query<FindCommentQuery>,
+) -> Result<HttpResponse, Error> {
+    let service = CommentServicePg::new(data.db_pool.clone());
+    match service.delete_comments(&query.article_id).await {
+        Ok(()) => Ok(HttpResponse::Ok().json(json!({"message":"ok"}))),
+        Err(e) => {
+            log::error!("remove  comment {:?}", e);
             Err(Error::from(()))
         }
     }
@@ -74,6 +90,7 @@ async fn main() -> io::Result<()> {
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(find_comments)
+            .service(delete_comments)
     })
     .bind(format!("0.0.0.0:5000"))?
     .run()

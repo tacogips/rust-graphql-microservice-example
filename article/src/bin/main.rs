@@ -10,8 +10,8 @@ use std::io;
 use sqlx::types::Uuid;
 use std::str::FromStr;
 
-use actix_web::{get, middleware, web, App, Error, HttpResponse, HttpServer};
-
+use actix_web::{delete, get, middleware, web, App, Error, HttpResponse, HttpServer};
+use serde_json::json;
 use std::time::Duration;
 
 macro_rules! env_value {
@@ -57,6 +57,24 @@ async fn get_article(
     }
 }
 
+#[delete("/article/{id}")]
+async fn delete_article(
+    data: web::Data<SharedData>,
+    path: web::Path<String>,
+) -> Result<HttpResponse, Error> {
+    let service = ArticleServicePg::new(data.db_pool.clone());
+
+    let article_id = path.into_inner();
+
+    match service.delete_article(&article_id).await {
+        Ok(()) => Ok(HttpResponse::Ok().json(json!({"message":"ok"}))),
+        Err(e) => {
+            log::error!("find comment {:?}", e);
+            Err(Error::from(()))
+        }
+    }
+}
+
 fn setup_logger() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info"))
         .target(env_logger::Target::Stdout)
@@ -93,6 +111,8 @@ async fn main() -> io::Result<()> {
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(find_articles)
+            .service(get_article)
+            .service(delete_article)
     })
     .bind(format!("0.0.0.0:5000"))?
     .run()

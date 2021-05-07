@@ -34,6 +34,18 @@ pub async fn find_articles_with_overview() -> Result<Vec<Article>> {
     Ok(Article::from(article_rows))
 }
 
+pub async fn delete_article(article_id: &str) -> Result<()> {
+    let _ = CLIENT
+        .delete(&format!(
+            "{}/article/{}",
+            ARTICLE_ENDPOINT.as_str(),
+            article_id
+        ))
+        .send()
+        .await?;
+    Ok(())
+}
+
 pub async fn get_article(article_id: &str) -> Result<Article> {
     let article_row = CLIENT
         .get(&format!(

@@ -1,20 +1,15 @@
 use anyhow::{anyhow, Result};
 use models::article::*;
-use serde::{Deserialize, Serialize};
-use sqlx::{
-    self,
-    postgres::PgPool,
-    query_as,
-    types::{chrono::NaiveDateTime, Uuid},
-    Error as SqlError,
-};
+use sqlx::{self, postgres::PgPool, query_as, types::Uuid, Error as SqlError};
 
 use async_trait::async_trait;
+use std::str::FromStr;
 
 #[async_trait]
 pub trait ArticleService {
     async fn find_articles(&self, overview_text: bool) -> Result<Vec<ArticleRow>>;
     async fn get_article(&self, article_id: Uuid) -> Result<Option<ArticleRow>>;
+    async fn delete_article(&self, article_id: &str) -> Result<()>;
 }
 
 #[derive(Debug)]
@@ -94,5 +89,24 @@ impl ArticleService for ArticleServicePg {
                 e => Err(anyhow!("find article error :{}", e)),
             },
         }
+    }
+
+    async fn delete_article(&self, article_id: &str) -> Result<()> {
+        let article_id_as_uuid: Uuid = Uuid::from_str(article_id)?;
+
+        let mut tx = self.db_pool.begin().await?;
+
+        query_as!(
+            CommentRow,
+            r#"delete from article where id = $1;"#,
+            &article_id_as_uuid
+        )
+        .bind("")
+        .execute(&mut tx)
+        .await?;
+
+        tx.commit().await?;
+
+        Ok(())
     }
 }
