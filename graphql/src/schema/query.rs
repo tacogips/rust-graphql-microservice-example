@@ -1,5 +1,8 @@
+use super::client;
 use super::object::*;
 use async_graphql::*;
+use log;
+
 #[derive(InputObject)]
 struct Pagination {
     skip: usize,
@@ -18,7 +21,11 @@ impl Query {
         &self,
         #[graphql(default_with = "default_article_pagination()")] pagination: Pagination,
     ) -> Vec<Article> {
-        //TODO(tacogips) this is just mock
-        vec![]
+        client::find_articles_with_overview()
+            .await
+            .unwrap_or_else(|e| {
+                log::error!("fetch article error:{}", e);
+                vec![]
+            })
     }
 }

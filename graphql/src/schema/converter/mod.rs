@@ -1,7 +1,8 @@
 pub mod response {
-    pub use article::response::{ArticleRow, ArticleStatus};
-    pub use comment::response::CommentRow;
-    pub use user::response::UserRow;
+
+    pub use models::article::*;
+    pub use models::comment::*;
+    pub use models::user::*;
 }
 
 pub use super::object::{Article, ArticleStatus, Comment, User};

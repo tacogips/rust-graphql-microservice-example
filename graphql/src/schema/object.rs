@@ -24,7 +24,10 @@ impl Article {
     }
 
     async fn author(&self) -> Option<User> {
-        client::get_user(&self.author_id).await.ok()
+        client::get_user(&self.author_id)
+            .await
+            .map_err(|e| log::error!("author error {}", e))
+            .ok()
     }
 
     async fn status(&self) -> ArticleStatus {
@@ -89,6 +92,9 @@ impl Comment {
     }
 
     async fn author(&self) -> Option<User> {
-        client::get_user(&self.author_id).await.ok()
+        client::get_user(&self.author_id)
+            .await
+            .map_err(|e| log::error!("author error {}", e))
+            .ok()
     }
 }

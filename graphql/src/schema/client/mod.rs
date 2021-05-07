@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Result};
 use lazy_static::lazy_static;
-use reqwest;
+use reqwest::{self, IntoUrl};
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::sync::Arc;
@@ -14,15 +14,18 @@ macro_rules! env_value {
 }
 
 lazy_static! {
-    static ref CLIENT: Arc<reqwest::Client> = Arc::new(reqwest::Client::builder().build().unwrap());
-    static ref ARTICLE_ENDPOINT: String = env_value!("ARTICLE_SERVICE_ENDPOINT").unwrap();
-    static ref USER_ENDPOINT: String = env_value!("USER_SERVICE_ENDPOINT").unwrap();
-    static ref COMMENT_ENDPOINT: String = env_value!("COMMENT_ENDPOINT").unwrap();
+    static ref CLIENT: Arc<reqwest::Client> = Arc::new(reqwest::Client::new());
+    static ref ARTICLE_ENDPOINT: String = env_value!("ARTICLE_SERVICE_ENDPOINT")
+        .unwrap_or_else(|_| "http://localhost:5011".to_string());
+    static ref USER_ENDPOINT: String =
+        env_value!("USER_SERVICE_ENDPOINT").unwrap_or_else(|_| "http://localhost:5012".to_string());
+    static ref COMMENT_ENDPOINT: String =
+        env_value!("COMMENT_ENDPOINT").unwrap_or_else(|_| "http://localhost:5013".to_string());
 }
 
 pub async fn find_articles_with_overview() -> Result<Vec<Article>> {
     let article_rows = CLIENT
-        .get(format!("{}/articles", ARTICLE_ENDPOINT.as_str()))
+        .get(&format!("{}/articles", ARTICLE_ENDPOINT.as_str()))
         .send()
         .await?
         .json::<Vec<response::ArticleRow>>()
@@ -33,7 +36,7 @@ pub async fn find_articles_with_overview() -> Result<Vec<Article>> {
 
 pub async fn get_article(article_id: &str) -> Result<Article> {
     let article_row = CLIENT
-        .get(format!(
+        .get(&format!(
             "{}/article/{}",
             ARTICLE_ENDPOINT.as_str(),
             article_id
@@ -47,7 +50,7 @@ pub async fn get_article(article_id: &str) -> Result<Article> {
 
 pub async fn find_users(user_ids: Vec<&str>) -> Result<Vec<User>> {
     let user_rows = CLIENT
-        .get(format!("{}/users", USER_ENDPOINT.as_str()))
+        .get(&format!("{}/users", USER_ENDPOINT.as_str()))
         .query(
             &user_ids
                 .into_iter()
@@ -64,7 +67,7 @@ pub async fn find_users(user_ids: Vec<&str>) -> Result<Vec<User>> {
 
 pub async fn get_user(user_id: &str) -> Result<User> {
     let user_row = CLIENT
-        .get(format!("{}/user/{}", USER_ENDPOINT.as_str(), user_id))
+        .get(&format!("{}/user/{}", USER_ENDPOINT.as_str(), user_id))
         .send()
         .await?
         .json::<response::UserRow>()
@@ -75,7 +78,7 @@ pub async fn get_user(user_id: &str) -> Result<User> {
 
 pub async fn find_comments(article_id: &str) -> Result<Vec<Comment>> {
     let comment_rows = CLIENT
-        .get(format!("{}/comments", COMMENT_ENDPOINT.as_str()))
+        .get(&format!("{}/comments", COMMENT_ENDPOINT.as_str()))
         .query(&[("article_id", article_id)])
         .send()
         .await?

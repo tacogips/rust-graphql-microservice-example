@@ -1,38 +1,15 @@
 use anyhow::{anyhow, Result};
-use log;
+use models::article::*;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use sqlx::{
     self,
-    database::Database,
-    postgres::{PgPool, PgPoolOptions},
-    query, query_as,
-    types::{
-        chrono::{DateTime, NaiveDateTime, Utc},
-        Uuid,
-    },
-    Error as SqlError, Pool, Postgres,
+    postgres::PgPool,
+    query_as,
+    types::{chrono::NaiveDateTime, Uuid},
+    Error as SqlError,
 };
 
 use async_trait::async_trait;
-
-#[derive(sqlx::Type, Debug, Serialize, Deserialize)]
-#[sqlx(rename = "article_status", rename_all = "lowercase")]
-pub enum ArticleStatus {
-    Published,
-    Draft,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ArticleRow {
-    pub id: Uuid,
-    pub status: ArticleStatus,
-    pub text: Option<String>,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
-
-    pub author_id: Uuid,
-}
 
 #[async_trait]
 pub trait ArticleService {
