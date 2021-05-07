@@ -29,8 +29,6 @@ async fn find_comments(
     query: web::Query<FindCommentQuery>,
 ) -> Result<HttpResponse, Error> {
     let service = CommentServicePg::new(data.db_pool.clone());
-    //TODO
-    log::info!("article id = {}", &query.article_id);
     match service.find_comments(&query.article_id).await {
         Ok(comments) => Ok(HttpResponse::Ok().json(comments)),
         Err(e) => {
