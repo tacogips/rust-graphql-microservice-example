@@ -1,26 +1,16 @@
 use ::article::service::*;
 
-use anyhow::{anyhow, Error as AnyError};
+use anyhow::anyhow;
 use env_logger;
 use log;
-use serde_json::json;
-use sqlx::{
-    postgres::{PgPool, PgPoolOptions},
-    Pool, Postgres,
-};
+use sqlx::postgres::{PgPool, PgPoolOptions};
 use std::env;
 use std::io;
 
 use sqlx::types::Uuid;
 use std::str::FromStr;
 
-use actix_web::{
-    get,
-    http::StatusCode,
-    middleware, post, web,
-    web::{Json, Query},
-    App, Error, HttpRequest, HttpResponse, HttpServer,
-};
+use actix_web::{get, middleware, web, App, Error, HttpResponse, HttpServer};
 
 use std::time::Duration;
 

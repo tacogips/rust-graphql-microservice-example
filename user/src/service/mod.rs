@@ -1,31 +1,18 @@
 use anyhow::{anyhow, Result};
 use log;
+use models::user::*;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use sqlx::{
     self,
-    database::Database,
-    postgres::{PgPool, PgPoolOptions},
-    query, query_as,
-    types::{
-        chrono::{DateTime, NaiveDateTime, Utc},
-        uuid, Uuid,
-    },
-    Error as SqlError, Pool, Postgres,
+    postgres::PgPool,
+    query_as,
+    types::{chrono::NaiveDateTime, uuid, Uuid},
+    Error as SqlError,
 };
 use std::result::Result as StdResult;
 
 use async_trait::async_trait;
 use std::str::FromStr;
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UserRow {
-    pub id: Uuid,
-    pub name: String,
-    pub email: String,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
-}
 
 #[async_trait]
 pub trait UserService {

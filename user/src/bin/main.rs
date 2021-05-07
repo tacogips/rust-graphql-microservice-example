@@ -1,27 +1,17 @@
 use ::user::service::*;
 
-use anyhow::{anyhow, Error as AnyError};
+use anyhow::anyhow;
 use env_logger;
 use log;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
-use sqlx::{
-    postgres::{PgPool, PgPoolOptions},
-    Pool, Postgres,
-};
+use sqlx::postgres::{PgPool, PgPoolOptions};
 use std::env;
 use std::io;
 
 use sqlx::types::Uuid;
 use std::str::FromStr;
 
-use actix_web::{
-    get,
-    http::StatusCode,
-    middleware, post, web,
-    web::{Json, Query},
-    App, Error, HttpRequest, HttpResponse, HttpServer,
-};
+use actix_web::{get, middleware, web, App, Error, HttpResponse, HttpServer};
 
 use std::time::Duration;
 
@@ -54,11 +44,11 @@ async fn find_users(
 #[get("/user/{id}")]
 async fn get_user(
     data: web::Data<SharedData>,
-    path: web::Path<String>,
+    path: web::Path<(String,)>,
 ) -> Result<HttpResponse, Error> {
     let service = UserServicePg::new(data.db_pool.clone());
 
-    let user_id = path.into_inner();
+    let user_id = path.into_inner().0;
     //Uuid
     let user_id = match Uuid::from_str(&user_id) {
         Ok(id) => id,
@@ -113,6 +103,7 @@ async fn main() -> io::Result<()> {
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(find_users)
+            .service(get_user)
     })
     .bind(format!("0.0.0.0:5000"))?
     .run()

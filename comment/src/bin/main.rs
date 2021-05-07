@@ -1,27 +1,14 @@
 use ::comment::service::*;
 
-use anyhow::{anyhow, Error as AnyError};
+use anyhow::anyhow;
 use env_logger;
 use log;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
-use sqlx::{
-    postgres::{PgPool, PgPoolOptions},
-    Pool, Postgres,
-};
+use sqlx::postgres::{PgPool, PgPoolOptions};
 use std::env;
 use std::io;
 
-use sqlx::types::Uuid;
-use std::str::FromStr;
-
-use actix_web::{
-    get,
-    http::StatusCode,
-    middleware, post, web,
-    web::{Json, Query},
-    App, Error, HttpRequest, HttpResponse, HttpServer,
-};
+use actix_web::{get, middleware, web, App, Error, HttpResponse, HttpServer};
 
 use std::time::Duration;
 
@@ -42,6 +29,8 @@ async fn find_comments(
     query: web::Query<FindCommentQuery>,
 ) -> Result<HttpResponse, Error> {
     let service = CommentServicePg::new(data.db_pool.clone());
+    //TODO
+    log::info!("article id = {}", &query.article_id);
     match service.find_comments(&query.article_id).await {
         Ok(comments) => Ok(HttpResponse::Ok().json(comments)),
         Err(e) => {

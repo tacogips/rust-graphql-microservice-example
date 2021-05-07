@@ -13,14 +13,20 @@ actix-web = "3.3"
 async-graphql = "2.8"
 async-graphql-actix-web = "2.8.4"
 
-user = {path ="../user"}
-article = {path ="../article"}
-comment = {path ="../comment"}
+
+models = {path ="../models"}
 chrono = "0.4"
-reqwest = {version="0.11", features=["json"]}
+reqwest = {version="0.10",features = ["json"]}
 lazy_static = "1.4.0"
 anyhow = "1.0"
 serde = "1.0"
+
+log = "0.4"
+env_logger = "0.8"
+
+
+tokio = {version = "1.5" , features = ["full"]}
+
 
 [lib]
 name = "graphql"

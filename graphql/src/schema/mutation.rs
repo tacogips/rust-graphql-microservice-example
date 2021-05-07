@@ -13,7 +13,7 @@ pub struct Mutation;
 
 #[Object]
 impl Mutation {
-    async fn put_article(&self, article: InputArticle) -> Article {
-        unimplemented!()
+    async fn post_article(&self, article: InputArticle) -> String {
+        "dummy".to_string()
     }
 }

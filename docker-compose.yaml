@@ -22,14 +22,9 @@ services:
         BUILD_FLAG: ""
         BUILD_TARGET: debug
         ENV: dev
-        ARTICLE_ENDPOINT: http://article
-        USER_ENDPOINT: http://user
-        COMMENT_ENDPOINT: http://comment
-
-    depends_on:
-      - "article"
-      - "user"
-      - "comment"
+        ARTICLE_SERVICE_ENDPOINT: http://article:5000
+        USER_SERVICE_ENDPOINT: http://user:5000
+        COMMENT_SERVICE_ENDPOINT: http://comment:5000
 
     links:
       - "user:user"
