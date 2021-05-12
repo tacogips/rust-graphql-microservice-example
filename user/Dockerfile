@@ -30,9 +30,7 @@ COPY . .
 COPY --from=cacher /app/target target
 COPY --from=cacher $CARGO_HOME $CARGO_HOME
 
-ARG DATABASE_URL
 
-ENV SQLX_OFFLINE=true
 WORKDIR /app/user
 RUN cargo build --bin user-server ${BUILD_FLAG}
 
@@ -44,10 +42,7 @@ ARG BUILD_TARGET=release
 ARG ENV=dev
 
 WORKDIR app
-ARG DATABASE_URL
 COPY --from=builder /app/target/${BUILD_TARGET}/user-server user-server
-
-ENV DATABASE_URL=${DATABASE_URL}
 
 EXPOSE 5000
 CMD ./user-server

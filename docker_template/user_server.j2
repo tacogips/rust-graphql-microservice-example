@@ -1,8 +1,6 @@
 {% extends "rust_base.j2" %}
 {% block build %}
-ARG DATABASE_URL
 
-ENV SQLX_OFFLINE=true
 WORKDIR /app/user
 RUN cargo build --bin user-server ${BUILD_FLAG}
 
@@ -10,10 +8,7 @@ RUN cargo build --bin user-server ${BUILD_FLAG}
 
 
 {% block bin %}
-ARG DATABASE_URL
 COPY --from=builder /app/target/${BUILD_TARGET}/user-server user-server
-
-ENV DATABASE_URL=${DATABASE_URL}
 
 EXPOSE 5000
 CMD ./user-server

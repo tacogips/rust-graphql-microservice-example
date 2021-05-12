@@ -28,10 +28,8 @@ pub mod article {
 
 pub mod user {
 
-    use sqlx::{
-        self,
-        types::{chrono::NaiveDateTime, Uuid},
-    };
+    use chrono::NaiveDateTime;
+    use uuid::Uuid;
 
     use serde::{Deserialize, Serialize};
     #[derive(Debug, Serialize, Deserialize)]
