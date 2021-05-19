@@ -111,6 +111,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "actix-cors"
+version = "0.5.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "36b133d8026a9f209a9aeeeacd028e7451bcca975f592881b305d37983f303d7"
+dependencies = [
+ "actix-web 3.3.2",
+ "derive_more",
+ "futures-util",
+ "log",
+ "once_cell",
+ "tinyvec",
+]
+
+[[package]]
 name = "actix-http"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1495,6 +1509,7 @@ name = "graphql"
 version = "0.1.0"
 dependencies = [
  "actix 0.11.1",
+ "actix-cors",
  "actix-rt 2.2.0",
  "actix-web 3.3.2",
  "anyhow",

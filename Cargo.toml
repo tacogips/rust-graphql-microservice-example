@@ -1,2 +1,2 @@
 [workspace]
-members = ["article" ,"auth" ,"comment" ,"graphql" ,"user","models"]
+members = ["article" ,"comment" ,"graphql" ,"user","models"]

@@ -1,7 +1,9 @@
 use ::graphql::{schema, BlogSchema};
-use actix_web::{guard, web, App, HttpResponse, HttpServer, Result};
+use actix_cors::Cors;
+use actix_web::{guard, http, middleware, web, App, HttpResponse, HttpServer, Result};
 use async_graphql_actix_web;
 use std::io;
+use std::sync::Arc;
 
 use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
 use async_graphql_actix_web::{Request, Response};
@@ -28,11 +30,17 @@ fn setup_logger() {
 #[actix_web::main]
 async fn main() -> io::Result<()> {
     setup_logger();
+
     let schema = schema();
 
     let result = HttpServer::new(move || {
+        let cors = Cors::permissive();
+        //.allowed_origin("http://localhost:5000")
+        //.allowed_origin("http://localhost:5010")
+        //.allowed_origin("http://localhost:3000");
         App::new()
             .data(schema.clone())
+            .wrap(cors)
             .service(web::resource("/").guard(guard::Post()).to(handle_graphql))
             .service(
                 web::resource("/")

@@ -24,6 +24,12 @@ lazy_static! {
 }
 
 pub async fn find_articles_with_overview() -> Result<Vec<Article>> {
+    log::info!("article service host:[{}]", ARTICLE_ENDPOINT.as_str());
+    log::info!(
+        "article service path:{}",
+        format!("{}/articles", ARTICLE_ENDPOINT.as_str())
+    );
+
     let article_rows = CLIENT
         .get(&format!("{}/articles", ARTICLE_ENDPOINT.as_str()))
         .send()
@@ -35,6 +41,7 @@ pub async fn find_articles_with_overview() -> Result<Vec<Article>> {
 }
 
 pub async fn delete_article(article_id: &str) -> Result<()> {
+    log::info!("article service host:{}", ARTICLE_ENDPOINT.as_str());
     let _ = CLIENT
         .delete(&format!(
             "{}/article/{}",
@@ -61,6 +68,7 @@ pub async fn get_article(article_id: &str) -> Result<Article> {
 }
 
 pub async fn find_users(user_ids: Vec<&str>) -> Result<Vec<User>> {
+    log::info!("user service host:{}", USER_ENDPOINT.as_str());
     let user_rows = CLIENT
         .get(&format!("{}/users", USER_ENDPOINT.as_str()))
         .query(
@@ -78,6 +86,7 @@ pub async fn find_users(user_ids: Vec<&str>) -> Result<Vec<User>> {
 }
 
 pub async fn get_user(user_id: &str) -> Result<User> {
+    log::info!("user service host:{}", USER_ENDPOINT.as_str());
     let user_row = CLIENT
         .get(&format!("{}/user/{}", USER_ENDPOINT.as_str(), user_id))
         .send()
@@ -89,6 +98,7 @@ pub async fn get_user(user_id: &str) -> Result<User> {
 }
 
 pub async fn find_comments(article_id: &str) -> Result<Vec<Comment>> {
+    log::info!("comment service host:{}", COMMENT_ENDPOINT.as_str());
     let comment_rows = CLIENT
         .get(&format!("{}/comments", COMMENT_ENDPOINT.as_str()))
         .query(&[("article_id", article_id)])

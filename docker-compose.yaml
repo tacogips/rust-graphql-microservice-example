@@ -7,10 +7,12 @@ services:
       context: db/postgresql_multipledb
       dockerfile: Dockerfile
     restart: always
+    volumes:
+      - db_pg_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: db_user
       POSTGRES_PASSWORD: pass
-      POSTGRES_MULTIPLE_DATABASES: article_db,user_db,comment_db
+      POSTGRES_MULTIPLE_DATABASES: article_db,user_db,comment_db,auth_db
     ports:
       - 5432:5432
 
@@ -83,6 +85,26 @@ services:
     ports:
       - 5013:5000
 
+  auth:
+    image: quay.io/keycloak/keycloak:latest
+    depends_on:
+      - "db"
+    links:
+      - "db:db"
+    environment:
+      KEYCLOAK_USER: auth_admin
+      KEYCLOAK_PASSWORD: pass
+      DB_VENDOR: postgres
+      DB_USER: db_user
+      DB_PASSWORD: pass
+      DB_ADDR: db
+      DB_PORT: 5432
+      DB_DATABASE: auth_db
+    ports:
+      - 5014:8080
+
+
+
 #  rabbitmq:
 #    image: rabbitmq:3-management
 #    hostname: my-rabbit
@@ -93,3 +115,6 @@ services:
 #      - 5672:5672
 #      - 15672:15672
 #
+volumes:
+    db_pg_data:
+      driver: local  # is already local by default
