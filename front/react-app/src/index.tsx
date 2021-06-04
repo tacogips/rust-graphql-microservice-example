@@ -27,8 +27,6 @@ export const keycloakCli = Keycloak({
   clientId: "sso_client",
 });
 
-keycloakCli.init({ onLoad: "check-sso" });
-console.log("userinfo", keycloakCli.loadUserInfo());
 ReactDOM.render(
   <ReactKeycloakProvider
     authClient={keycloakCli}
