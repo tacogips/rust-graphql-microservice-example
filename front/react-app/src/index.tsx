@@ -29,20 +29,19 @@ export const keycloakCli = Keycloak({
 
 keycloakCli.init({ onLoad: "check-sso" });
 console.log("userinfo", keycloakCli.loadUserInfo());
-//  <ReactKeycloakProvider
-//    authClient={keycloakCli}
-//    initOptions={{
-//      //onLoad: "check-sso",
-//      onLoad: "login-required",
-//    }}
-//  >
-//  </ReactKeycloakProvider>,
 ReactDOM.render(
-  <ApolloProvider client={apolloClient}>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </ApolloProvider>,
+  <ReactKeycloakProvider
+    authClient={keycloakCli}
+    initOptions={{
+      onLoad: "login-required",
+    }}
+  >
+    <ApolloProvider client={apolloClient}>
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    </ApolloProvider>
+  </ReactKeycloakProvider>,
   document.getElementById("root"),
 );
 
