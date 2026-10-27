@@ -1,2 +1,6 @@
 [workspace]
 members = ["article" ,"auth" ,"comment" ,"graphql" ,"user","models"]
+
+# Current Mozilla trust data adapted to the legacy TLS API; see vendor/SECURITY.md.
+[patch.crates-io]
+webpki-roots-0-21-1 = { package = "webpki-roots", path = "vendor/webpki-roots-0.21.1" }
