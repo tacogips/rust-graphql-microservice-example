@@ -1,0 +1,120 @@
+version: '3.9'
+
+services:
+
+  db:
+    build:
+      context: db/postgresql_multipledb
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - db_pg_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_MULTIPLE_DATABASES: article_db,user_db,comment_db,auth_db
+    ports:
+      - 5432:5432
+
+  graphql:
+    build:
+      context: .
+      dockerfile: graphql/Dockerfile
+      args:
+        BUILD_FLAG: ""
+        BUILD_TARGET: debug
+        ENV: dev
+        ARTICLE_SERVICE_ENDPOINT: http://article:5000
+        USER_SERVICE_ENDPOINT: http://user:5000
+        COMMENT_SERVICE_ENDPOINT: http://comment:5000
+
+    links:
+      - "user:user"
+      - "article:article"
+      - "comment:comment"
+    ports:
+      - 5010:5000
+
+  article:
+    build:
+      context: .
+      dockerfile: article/Dockerfile
+      args:
+        BUILD_FLAG: ""
+        BUILD_TARGET: debug
+        ENV: dev
+        DATABASE_URL: postgres://db_user:pass@db:5432/article_db
+
+    depends_on:
+      - "db"
+    links:
+      - "db:db"
+#      - "rabbitmq:rabbitmq"
+    ports:
+      - 5011:5000
+
+  user:
+    build:
+      context: .
+      dockerfile: user/Dockerfile
+      args:
+        BUILD_FLAG: ""
+        BUILD_TARGET: debug
+        ENV: dev
+        DATABASE_URL: postgres://db_user:pass@db:5432/user_db
+    depends_on:
+      - "db"
+    links:
+      - "db:db"
+    ports:
+      - 5012:5000
+
+  comment:
+    build:
+      context: .
+      dockerfile: comment/Dockerfile
+      args:
+        BUILD_FLAG: ""
+        BUILD_TARGET: debug
+        ENV: dev
+        DATABASE_URL: postgres://db_user:pass@db:5432/comment_db
+    depends_on:
+      - "db"
+    links:
+      - "db:db"
+    ports:
+      - 5013:5000
+
+  auth:
+    image: quay.io/keycloak/keycloak:latest
+    depends_on:
+      - "db"
+    links:
+      - "db:db"
+    environment:
+      KEYCLOAK_USER: auth_admin
+      KEYCLOAK_PASSWORD: pass
+      DB_VENDOR: postgres
+      DB_USER: db_user
+      DB_PASSWORD: pass
+      DB_ADDR: db
+      DB_PORT: 5432
+      DB_DATABASE: auth_db
+    ports:
+      - 5014:8080
+
+
+
+#  rabbitmq:
+#    image: rabbitmq:3-management
+#    hostname: my-rabbit
+#    volumes:
+#      - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+#      - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+#    ports:
+#      - 5672:5672
+#      - 15672:15672
+#
+volumes:
+    db_pg_data:
+      driver: local  # is already local by default

@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS comment_table;
+DROP EXTENSION IF EXISTS "uuid-ossp";
