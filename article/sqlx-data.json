@@ -1,0 +1,179 @@
+{
+  "db": "PostgreSQL",
+  "48360933c970b8e9957bc9284a890f939469439b12fea2fa314552358efd3186": {
+    "query": "\n            select\n                id,\n                status as \"status: _\",\n                 text,\n                created_at,\n                updated_at,\n                author_id\n\n            from article;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Uuid"
+        },
+        {
+          "ordinal": 1,
+          "name": "status: _",
+          "type_info": {
+            "Custom": {
+              "name": "article_status",
+              "kind": {
+                "Enum": [
+                  "published",
+                  "draft"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "text",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 3,
+          "name": "created_at",
+          "type_info": "Timestamp"
+        },
+        {
+          "ordinal": 4,
+          "name": "updated_at",
+          "type_info": "Timestamp"
+        },
+        {
+          "ordinal": 5,
+          "name": "author_id",
+          "type_info": "Uuid"
+        }
+      ],
+      "parameters": {
+        "Left": []
+      },
+      "nullable": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "6e7ef5721fafeb4fea26d4f7b60763da10c2f24e3645712c88f3d25ffdd56391": {
+    "query": "\n            select\n                id,\n                status as \"status: _\",\n                substring(text,10) as text,\n                created_at,\n                updated_at,\n                author_id\n\n            from article;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Uuid"
+        },
+        {
+          "ordinal": 1,
+          "name": "status: _",
+          "type_info": {
+            "Custom": {
+              "name": "article_status",
+              "kind": {
+                "Enum": [
+                  "published",
+                  "draft"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "text",
+          "type_info": "Text"
+        },
+        {
+          "ordinal": 3,
+          "name": "created_at",
+          "type_info": "Timestamp"
+        },
+        {
+          "ordinal": 4,
+          "name": "updated_at",
+          "type_info": "Timestamp"
+        },
+        {
+          "ordinal": 5,
+          "name": "author_id",
+          "type_info": "Uuid"
+        }
+      ],
+      "parameters": {
+        "Left": []
+      },
+      "nullable": [
+        false,
+        false,
+        null,
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "7107ed12637823444d3a18eb62cb0d4fd618671f28295c8424df70146ef20308": {
+    "query": "\n            select\n                id,\n                status as \"status: _\",\n                text,\n                created_at,\n                updated_at,\n                author_id\n            from article where id = $1; ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Uuid"
+        },
+        {
+          "ordinal": 1,
+          "name": "status: _",
+          "type_info": {
+            "Custom": {
+              "name": "article_status",
+              "kind": {
+                "Enum": [
+                  "published",
+                  "draft"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "text",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 3,
+          "name": "created_at",
+          "type_info": "Timestamp"
+        },
+        {
+          "ordinal": 4,
+          "name": "updated_at",
+          "type_info": "Timestamp"
+        },
+        {
+          "ordinal": 5,
+          "name": "author_id",
+          "type_info": "Uuid"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ]
+    }
+  }
+}
