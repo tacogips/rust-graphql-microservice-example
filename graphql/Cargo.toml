@@ -1,0 +1,37 @@
+[package]
+name = "graphql"
+version = "0.1.0"
+authors = ["tacogips <me@tacogips.me>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix = "0.11"
+actix-rt = "2.2"
+actix-web = "3.3"
+async-graphql = "2.8"
+async-graphql-actix-web = "2.8.4"
+
+
+models = {path ="../models"}
+chrono = "0.4"
+reqwest = {version="0.10",features = ["json"]}
+lazy_static = "1.4.0"
+anyhow = "1.0"
+serde = "1.0"
+
+log = "0.4"
+env_logger = "0.8"
+
+
+tokio = {version = "1.5" , features = ["full"]}
+
+
+[lib]
+name = "graphql"
+path = "src/lib.rs"
+
+[[bin]]
+name = "graphql-server"
+path = "src/bin/main.rs"
