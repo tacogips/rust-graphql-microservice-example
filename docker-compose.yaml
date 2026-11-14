@@ -1,0 +1,109 @@
+version: '3.9'
+
+services:
+
+  db:
+    build:
+      context: db/postgresql_multipledb
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_MULTIPLE_DATABASES: article_db,comment_db
+    ports:
+      - 5432:5432
+
+  graphql:
+    build:
+      context: .
+      dockerfile: graphql/Dockerfile
+      args:
+        BUILD_FLAG: ""
+        BUILD_TARGET: debug
+        ENV: dev
+        ARTICLE_SERVICE_ENDPOINT: http://article:5000
+        USER_SERVICE_ENDPOINT: http://user:5000
+        COMMENT_SERVICE_ENDPOINT: http://comment:5000
+
+    links:
+      - "user:user"
+      - "article:article"
+      - "comment:comment"
+    ports:
+      - 5010:5000
+
+  article:
+    build:
+      context: .
+      dockerfile: article/Dockerfile
+      args:
+        BUILD_FLAG: ""
+        BUILD_TARGET: debug
+        ENV: dev
+        DATABASE_URL: postgres://db_user:pass@db:5432/article_db
+
+    depends_on:
+      - "db"
+    links:
+      - "db:db"
+#      - "rabbitmq:rabbitmq"
+    ports:
+      - 5011:5000
+
+  user:
+    build:
+      context: .
+      dockerfile: user/Dockerfile
+      args:
+        BUILD_FLAG: ""
+        BUILD_TARGET: debug
+        ENV: dev
+    depends_on:
+      - "couchbase"
+    links:
+      - "couchbase:couchbase"
+    ports:
+      - 5012:5000
+
+  comment:
+    build:
+      context: .
+      dockerfile: comment/Dockerfile
+      args:
+        BUILD_FLAG: ""
+        BUILD_TARGET: debug
+        ENV: dev
+        DATABASE_URL: postgres://db_user:pass@db:5432/comment_db
+    depends_on:
+      - "db"
+    links:
+      - "db:db"
+    ports:
+      - 5013:5000
+
+  couchbase:
+    #image: couchbase/server:community-6.6.0
+    image: couchbase:6.6.0
+    volumes:
+      - "./db/couchbase/volume/var:/opt/couchbase/var"
+
+    ports:
+        - 8091:8091
+        - 8092:8092
+        - 8093:8093
+        - 8094:8094
+        - 8095:8095
+        - 11210:11210
+
+
+#  rabbitmq:
+#    image: rabbitmq:3-management
+#    hostname: my-rabbit
+#    volumes:
+#      - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+#      - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+#    ports:
+#      - 5672:5672
+#      - 15672:15672
+#

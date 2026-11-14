@@ -1,0 +1,15 @@
+{% extends "rust_base.j2" %}
+{% block build %}
+
+WORKDIR /app/user
+RUN cargo build --bin user-server ${BUILD_FLAG}
+
+{% endblock %}
+
+
+{% block bin %}
+COPY --from=builder /app/target/${BUILD_TARGET}/user-server user-server
+
+EXPOSE 5000
+CMD ./user-server
+{% endblock %}
